@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/go-redis/redis"
 )
@@ -16,30 +15,11 @@ func main() {
 
 	fmt.Println("Params: ", args)
 
-	fromServer := "localhost:"
-	fromServer += portFrom
-
-	clientFrom := redis.NewClient(&redis.Options{
-		Addr:     fromServer,
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-
-	toServer := "localhost:"
-	toServer += portTo
-
-	clientTo := redis.NewClient(&redis.Options{
-		Addr:     toServer,
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-
+	clientFrom := redisClient("localhost:" + portFrom)
 	keys, _ := clientFrom.Keys("*").Result()
 	l := len(keys)
 
-	fmt.Println("Tamanho: ", l)
-
-	timer1 := time.NewTimer(time.Second)
+	clientTo := redisClient("localhost:" + portTo)
 
 	for i := 0; i < len(keys); i++ {
 		key := keys[i]
@@ -52,12 +32,17 @@ func main() {
 		}
 	}
 
-	timer2 := time.NewTimer(time.Second)
-
-	// fmt.Println(keys)
-	fmt.Println("From:", fromServer, " To:", toServer)
+	fmt.Println("From:", portFrom, " To:", portTo)
 	fmt.Println("Tamanho: ", l)
 	//
 
 	fmt.Println("DONE")
+}
+
+func redisClient(host string) *redis.Client {
+	return redis.NewClient(&redis.Options{
+		Addr:     host,
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
 }
