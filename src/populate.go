@@ -2,11 +2,9 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
+	"my"
 	"os"
 	"strconv"
-
-	"github.com/go-redis/redis"
 )
 
 func main() {
@@ -16,29 +14,15 @@ func main() {
 
 	fmt.Println(args)
 
-	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
+	client := my.RedisClient("localhost:6379")
 
 	for n := 0; n <= i; n++ {
 		fmt.Println("- ", n)
-		err := client.Set(RandStringRunes(10), "VALUE"+RandStringRunes(10), 0).Err()
+		err := client.Set(my.RandStringRunes(10), "VALUE"+my.RandStringRunes(10), 0).Err()
 		if err != nil {
 			panic(err)
 		}
 	}
 
 	fmt.Println("DONE")
-}
-
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-func RandStringRunes(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
 }

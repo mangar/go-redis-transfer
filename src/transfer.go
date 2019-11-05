@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
+	"my"
 	"os"
-
-	"github.com/go-redis/redis"
 )
 
 func main() {
@@ -15,11 +14,11 @@ func main() {
 
 	fmt.Println("Params: ", args)
 
-	clientFrom := redisClient("localhost:" + portFrom)
+	clientFrom := my.RedisClient("localhost:" + portFrom)
 	keys, _ := clientFrom.Keys("*").Result()
 	l := len(keys)
 
-	clientTo := redisClient("localhost:" + portTo)
+	clientTo := my.RedisClient("localhost:" + portTo)
 
 	for i := 0; i < len(keys); i++ {
 		key := keys[i]
@@ -37,12 +36,4 @@ func main() {
 	//
 
 	fmt.Println("DONE")
-}
-
-func redisClient(host string) *redis.Client {
-	return redis.NewClient(&redis.Options{
-		Addr:     host,
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
 }
